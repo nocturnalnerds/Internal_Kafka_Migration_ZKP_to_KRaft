@@ -52,6 +52,13 @@ x-controller-healthcheck: &controller-healthcheck
   retries: 20
   start_period: 45s
 
+x-jmx-exporter-common: &jmx-exporter-common
+  image: prom/jmx-exporter:1.0.1
+  restart: unless-stopped
+  profiles: ["observability"]
+  networks:
+    - kafka-net
+
 services:
   zookeeper-1:
     image: ${ZOOKEEPER_IMAGE:-confluentinc/cp-zookeeper:7.7.1}
@@ -66,6 +73,8 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 5
       ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
       KAFKA_OPTS: -Dzookeeper.4lw.commands.whitelist=ruok,mntr,stat,conf
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: zookeeper-1
     volumes:
       - zookeeper-1-data:/var/lib/zookeeper/data
       - zookeeper-1-log:/var/lib/zookeeper/log
@@ -86,6 +95,8 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 5
       ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
       KAFKA_OPTS: -Dzookeeper.4lw.commands.whitelist=ruok,mntr,stat,conf
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: zookeeper-2
     volumes:
       - zookeeper-2-data:/var/lib/zookeeper/data
       - zookeeper-2-log:/var/lib/zookeeper/log
@@ -106,6 +117,8 @@ services:
       ZOOKEEPER_SYNC_LIMIT: 5
       ZOOKEEPER_SERVERS: zookeeper-1:2888:3888;zookeeper-2:2888:3888;zookeeper-3:2888:3888
       KAFKA_OPTS: -Dzookeeper.4lw.commands.whitelist=ruok,mntr,stat,conf
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: zookeeper-3
     volumes:
       - zookeeper-3-data:/var/lib/zookeeper/data
       - zookeeper-3-log:/var/lib/zookeeper/log
@@ -281,6 +294,152 @@ services:
     networks:
       - kafka-net
 
+  kafka-1-jmx:
+    <<: *jmx-exporter-common
+    container_name: kafka-1-jmx
+    command: ["5556", "/etc/jmx/kafka-1.yml"]
+    volumes:
+      - ./observability/jmx/kafka-1.yml:/etc/jmx/kafka-1.yml:ro
+    depends_on:
+      kafka-1:
+        condition: service_started
+
+  kafka-2-jmx:
+    <<: *jmx-exporter-common
+    container_name: kafka-2-jmx
+    command: ["5556", "/etc/jmx/kafka-2.yml"]
+    volumes:
+      - ./observability/jmx/kafka-2.yml:/etc/jmx/kafka-2.yml:ro
+    depends_on:
+      kafka-2:
+        condition: service_started
+
+  kafka-3-jmx:
+    <<: *jmx-exporter-common
+    container_name: kafka-3-jmx
+    command: ["5556", "/etc/jmx/kafka-3.yml"]
+    volumes:
+      - ./observability/jmx/kafka-3.yml:/etc/jmx/kafka-3.yml:ro
+    depends_on:
+      kafka-3:
+        condition: service_started
+
+  kraft-controller-1-jmx:
+    <<: *jmx-exporter-common
+    container_name: kraft-controller-1-jmx
+    command: ["5556", "/etc/jmx/kraft-controller-1.yml"]
+    volumes:
+      - ./observability/jmx/kraft-controller-1.yml:/etc/jmx/kraft-controller-1.yml:ro
+    depends_on:
+      kraft-controller-1:
+        condition: service_started
+
+  kraft-controller-2-jmx:
+    <<: *jmx-exporter-common
+    container_name: kraft-controller-2-jmx
+    command: ["5556", "/etc/jmx/kraft-controller-2.yml"]
+    volumes:
+      - ./observability/jmx/kraft-controller-2.yml:/etc/jmx/kraft-controller-2.yml:ro
+    depends_on:
+      kraft-controller-2:
+        condition: service_started
+
+  kraft-controller-3-jmx:
+    <<: *jmx-exporter-common
+    container_name: kraft-controller-3-jmx
+    command: ["5556", "/etc/jmx/kraft-controller-3.yml"]
+    volumes:
+      - ./observability/jmx/kraft-controller-3.yml:/etc/jmx/kraft-controller-3.yml:ro
+    depends_on:
+      kraft-controller-3:
+        condition: service_started
+
+  zookeeper-1-jmx:
+    <<: *jmx-exporter-common
+    container_name: zookeeper-1-jmx
+    command: ["5556", "/etc/jmx/zookeeper-1.yml"]
+    volumes:
+      - ./observability/jmx/zookeeper-1.yml:/etc/jmx/zookeeper-1.yml:ro
+    depends_on:
+      zookeeper-1:
+        condition: service_started
+
+  zookeeper-2-jmx:
+    <<: *jmx-exporter-common
+    container_name: zookeeper-2-jmx
+    command: ["5556", "/etc/jmx/zookeeper-2.yml"]
+    volumes:
+      - ./observability/jmx/zookeeper-2.yml:/etc/jmx/zookeeper-2.yml:ro
+    depends_on:
+      zookeeper-2:
+        condition: service_started
+
+  zookeeper-3-jmx:
+    <<: *jmx-exporter-common
+    container_name: zookeeper-3-jmx
+    command: ["5556", "/etc/jmx/zookeeper-3.yml"]
+    volumes:
+      - ./observability/jmx/zookeeper-3.yml:/etc/jmx/zookeeper-3.yml:ro
+    depends_on:
+      zookeeper-3:
+        condition: service_started
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: prometheus
+    restart: unless-stopped
+    profiles: ["observability"]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus/alerts:/etc/prometheus/alerts:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      - alertmanager
+    networks:
+      - kafka-net
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: alertmanager
+    restart: unless-stopped
+    profiles: ["observability"]
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./observability/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager-data:/alertmanager
+    networks:
+      - kafka-net
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: grafana
+    restart: unless-stopped
+    profiles: ["observability"]
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - kafka-net
+
 networks:
   kafka-net:
     driver: bridge
@@ -298,4 +457,6 @@ volumes:
   kraft-controller-1-data:
   kraft-controller-2-data:
   kraft-controller-3-data:
-
+  prometheus-data:
+  alertmanager-data:
+  grafana-data:

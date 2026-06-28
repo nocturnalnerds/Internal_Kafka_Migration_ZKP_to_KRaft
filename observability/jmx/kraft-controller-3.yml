@@ -1,0 +1,11 @@
+hostPort: kraft-controller-3:9101
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+rules:
+  - pattern: kafka.controller<type=KafkaController, name=(ActiveControllerCount|OfflinePartitionsCount)><>Value
+    name: kafka_controller_kafkacontroller_$1
+    type: GAUGE
+  - pattern: kafka.server<type=raft-metrics, name=(current-leader|current-vote|commit-latency-avg)><>Value
+    name: kafka_raft_$1
+    type: GAUGE
+

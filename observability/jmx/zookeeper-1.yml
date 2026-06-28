@@ -1,0 +1,10 @@
+hostPort: zookeeper-1:9101
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+rules:
+  - pattern: org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+)><>(\w+)
+    name: zookeeper_$2
+    labels:
+      server_id: "$1"
+    type: GAUGE
+

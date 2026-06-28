@@ -1,0 +1,49 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/alerts/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  - job_name: kafka-brokers-jmx
+    static_configs:
+      - targets:
+          - kafka-1-jmx:5556
+          - kafka-2-jmx:5556
+          - kafka-3-jmx:5556
+        labels:
+          cluster: local-zk-to-kraft
+          role: broker
+
+  - job_name: kraft-controllers-jmx
+    static_configs:
+      - targets:
+          - kraft-controller-1-jmx:5556
+          - kraft-controller-2-jmx:5556
+          - kraft-controller-3-jmx:5556
+        labels:
+          cluster: local-zk-to-kraft
+          role: controller
+
+  - job_name: zookeeper-jmx
+    static_configs:
+      - targets:
+          - zookeeper-1-jmx:5556
+          - zookeeper-2-jmx:5556
+          - zookeeper-3-jmx:5556
+        labels:
+          cluster: local-zk-to-kraft
+          role: zookeeper
+

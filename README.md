@@ -58,6 +58,19 @@ The Kubernetes layer uses StatefulSets with persistent volume claim templates
 for ZooKeeper, Kafka brokers, and dedicated KRaft controllers. See
 [k8s/README.md](k8s/README.md).
 
+## Observability And Security
+
+```bash
+make observability-up
+scripts/security/generate-certs.sh
+scripts/security/create-scram-users.sh
+scripts/security/apply-acls.sh
+```
+
+See [observability/README.md](observability/README.md) and
+[docs/security.md](docs/security.md).
+
+
 ## Architecture
 
 The target topology is:

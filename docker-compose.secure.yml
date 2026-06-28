@@ -1,0 +1,47 @@
+name: kafka-zk-kraft
+
+x-secure-broker-env: &secure-broker-env
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:SASL_SSL,EXTERNAL:SASL_SSL
+  KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+  KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_SSL
+  KAFKA_SASL_ENABLED_MECHANISMS: SCRAM-SHA-512
+  KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: SCRAM-SHA-512
+  KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+  KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
+  KAFKA_SUPER_USERS: User:admin;User:broker
+  KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.truststore.jks
+  KAFKA_SSL_TRUSTSTORE_CREDENTIALS: truststore.creds
+  KAFKA_SSL_KEYSTORE_CREDENTIALS: keystore.creds
+  KAFKA_SSL_KEY_CREDENTIALS: key.creds
+  KAFKA_SSL_CLIENT_AUTH: requested
+  KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ""
+  KAFKA_LISTENER_NAME_INTERNAL_SCRAM_SHA_512_SASL_JAAS_CONFIG: org.apache.kafka.common.security.scram.ScramLoginModule required username="broker" password="broker-secret";
+  KAFKA_LISTENER_NAME_EXTERNAL_SCRAM_SHA_512_SASL_JAAS_CONFIG: org.apache.kafka.common.security.scram.ScramLoginModule required username="broker" password="broker-secret";
+
+services:
+  kafka-1:
+    environment:
+      <<: *secure-broker-env
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka-1.keystore.jks
+    volumes:
+      - kafka-1-data:/var/lib/kafka/data
+      - ./security/certs/generated:/etc/kafka/secrets:ro
+      - ./security:/opt/kafka-lab/security:ro
+
+  kafka-2:
+    environment:
+      <<: *secure-broker-env
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka-2.keystore.jks
+    volumes:
+      - kafka-2-data:/var/lib/kafka/data
+      - ./security/certs/generated:/etc/kafka/secrets:ro
+      - ./security:/opt/kafka-lab/security:ro
+
+  kafka-3:
+    environment:
+      <<: *secure-broker-env
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka-3.keystore.jks
+    volumes:
+      - kafka-3-data:/var/lib/kafka/data
+      - ./security/certs/generated:/etc/kafka/secrets:ro
+      - ./security:/opt/kafka-lab/security:ro

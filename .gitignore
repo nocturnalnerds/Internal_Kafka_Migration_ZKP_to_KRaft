@@ -15,6 +15,7 @@ backups/
 
 # Secrets generated for local development
 security/certs/generated/
+security/certs/*.zip
 *.jks
 *.p12
 *.pem

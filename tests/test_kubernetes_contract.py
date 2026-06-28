@@ -53,7 +53,7 @@ class KubernetesContract(unittest.TestCase):
         if kubectl.returncode != 0:
             self.skipTest("kubectl is not installed")
 
-        for overlay in ["local", "final-kraft", "production"]:
+        for overlay in ["local", "final-kraft", "production", "secure"]:
             with self.subTest(overlay=overlay):
                 subprocess.run(
                     ["kubectl", "kustomize", str(K8S / "overlays" / overlay)],
@@ -62,4 +62,3 @@ class KubernetesContract(unittest.TestCase):
                     stderr=subprocess.PIPE,
                     text=True,
                 )
-

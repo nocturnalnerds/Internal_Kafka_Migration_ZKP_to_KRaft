@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help test lint validate compose-config compose-up compose-down create-topics precheck migrate verify finalize rollback kustomize-local kustomize-final kustomize-production
+.PHONY: help test lint validate compose-config compose-up compose-down create-topics observability-up observability-migration-up observability-down precheck migrate verify finalize rollback kustomize-local kustomize-final kustomize-production kustomize-secure
 
 help:
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_-]+:.*##/ {printf "%-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -25,6 +25,15 @@ compose-down: ## Stop the local cluster but keep persistent volumes.
 create-topics: ## Create sample topics in the local cluster.
 	docker compose --profile tools run --rm kafka-init
 
+observability-up: ## Start Prometheus, Grafana, Alertmanager, and JMX exporters.
+	docker compose --profile observability up -d prometheus grafana alertmanager kafka-1-jmx kafka-2-jmx kafka-3-jmx zookeeper-1-jmx zookeeper-2-jmx zookeeper-3-jmx
+
+observability-migration-up: ## Start observability including KRaft controller exporters.
+	docker compose --profile migration --profile observability up -d prometheus grafana alertmanager kafka-1-jmx kafka-2-jmx kafka-3-jmx zookeeper-1-jmx zookeeper-2-jmx zookeeper-3-jmx kraft-controller-1-jmx kraft-controller-2-jmx kraft-controller-3-jmx
+
+observability-down: ## Stop observability services.
+	docker compose --profile observability stop prometheus grafana alertmanager kafka-1-jmx kafka-2-jmx kafka-3-jmx zookeeper-1-jmx zookeeper-2-jmx zookeeper-3-jmx
+
 precheck: ## Run migration pre-checks.
 	scripts/precheck.sh
 
@@ -48,3 +57,6 @@ kustomize-final: ## Render final KRaft Kubernetes manifests.
 
 kustomize-production: ## Render production Kubernetes manifests.
 	kubectl kustomize k8s/overlays/production
+
+kustomize-secure: ## Render secure Kubernetes manifests.
+	kubectl kustomize k8s/overlays/secure

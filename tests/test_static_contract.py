@@ -22,6 +22,9 @@ class BaselineRepositoryContract(unittest.TestCase):
             "docs/runbooks/migration.md",
             "k8s/README.md",
             "docs/diagrams/kubernetes-topology.mmd",
+            "observability/README.md",
+            "docs/security.md",
+            "security/README.md",
         ]
 
         missing = [path for path in required if not (ROOT / path).exists()]

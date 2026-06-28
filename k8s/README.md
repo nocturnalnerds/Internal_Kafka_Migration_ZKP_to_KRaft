@@ -8,6 +8,7 @@ Kubernetes manifests are managed with Kustomize.
 - `overlays/local`: lower resource requests for local clusters.
 - `overlays/production`: production resource sizing and anti-affinity.
 - `overlays/final-kraft`: broker configuration after KRaft finalization.
+- `overlays/secure`: TLS/SASL/SCRAM/ACL-oriented broker configuration.
 
 ## Validate
 
@@ -15,6 +16,7 @@ Kubernetes manifests are managed with Kustomize.
 kubectl kustomize k8s/overlays/local
 kubectl kustomize k8s/overlays/final-kraft
 kubectl kustomize k8s/overlays/production
+kubectl kustomize k8s/overlays/secure
 ```
 
 ## Deploy Local Overlay
@@ -30,4 +32,3 @@ kubectl apply -k k8s/overlays/local
 3. Roll brokers with `zookeeper.metadata.migration.enable=true`.
 4. Verify metadata and client traffic.
 5. Apply `k8s/overlays/final-kraft` after approval.
-

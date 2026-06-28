@@ -1,0 +1,57 @@
+groups:
+  - name: kafka-migration
+    rules:
+      - alert: KafkaBrokerExporterDown
+        expr: up{job="kafka-brokers-jmx"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Kafka broker JMX exporter is down
+          description: Broker exporter {{ $labels.instance }} has been down for more than 2 minutes.
+
+      - alert: KRaftControllerExporterDown
+        expr: up{job="kraft-controllers-jmx"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: KRaft controller JMX exporter is down
+          description: Controller exporter {{ $labels.instance }} has been down for more than 2 minutes.
+
+      - alert: ZooKeeperExporterDown
+        expr: up{job="zookeeper-jmx"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: ZooKeeper JMX exporter is down
+          description: ZooKeeper exporter {{ $labels.instance }} has been down for more than 2 minutes.
+
+      - alert: KafkaUnderReplicatedPartitions
+        expr: kafka_server_replicamanager_underreplicatedpartitions > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Kafka has under-replicated partitions
+          description: "{{ $value }} under-replicated partition(s) reported by {{ $labels.instance }}."
+
+      - alert: KafkaOfflinePartitions
+        expr: kafka_controller_kafkacontroller_offlinepartitionscount > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Kafka has offline partitions
+          description: "{{ $value }} offline partition(s) reported by {{ $labels.instance }}."
+
+      - alert: KafkaISRExpandsOrShrinks
+        expr: rate(kafka_server_replicamanager_isrshrinks_total[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Kafka ISR is shrinking
+          description: ISR shrink activity detected on {{ $labels.instance }}.
+

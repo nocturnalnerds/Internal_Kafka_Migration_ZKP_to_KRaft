@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  template:
+    spec:
+      containers:
+        - name: kafka
+          env:
+            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+              value: INTERNAL:SASL_SSL
+            - name: KAFKA_SECURITY_INTER_BROKER_PROTOCOL
+              value: SASL_SSL
+            - name: KAFKA_SASL_ENABLED_MECHANISMS
+              value: SCRAM-SHA-512
+            - name: KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL
+              value: SCRAM-SHA-512
+            - name: KAFKA_AUTHORIZER_CLASS_NAME
+              value: kafka.security.authorizer.AclAuthorizer
+            - name: KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND
+              value: "false"
+            - name: KAFKA_SUPER_USERS
+              value: User:admin;User:broker
+            - name: KAFKA_SSL_TRUSTSTORE_LOCATION
+              value: /etc/kafka/secrets/kafka.truststore.jks
+            - name: KAFKA_SSL_KEYSTORE_LOCATION
+              value: /etc/kafka/secrets/kafka.keystore.jks
+            - name: KAFKA_SSL_TRUSTSTORE_PASSWORD
+              value: changeit
+            - name: KAFKA_SSL_KEYSTORE_PASSWORD
+              value: changeit
+            - name: KAFKA_SSL_KEY_PASSWORD
+              value: changeit
+            - name: KAFKA_LISTENER_NAME_INTERNAL_SCRAM_SHA_512_SASL_JAAS_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-security-settings
+                  key: broker-jaas-config
+          volumeMounts:
+            - name: kafka-tls
+              mountPath: /etc/kafka/secrets
+              readOnly: true
+      volumes:
+        - name: kafka-tls
+          secret:
+            secretName: kafka-tls
