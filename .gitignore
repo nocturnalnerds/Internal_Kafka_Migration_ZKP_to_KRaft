@@ -26,6 +26,7 @@ security/certs/*.zip
 # Go
 bin/
 coverage.out
+examples/java/target/
 
 # Python
 __pycache__/

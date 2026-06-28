@@ -70,6 +70,16 @@ scripts/security/apply-acls.sh
 See [observability/README.md](observability/README.md) and
 [docs/security.md](docs/security.md).
 
+## Application Examples
+
+Go examples cover producers, consumers, idempotent producer settings, retry
+topics, DLQ routing, and transactional outbox mechanics. Java examples cover the
+Kafka transaction APIs used for transactional producers and exactly-once
+processing.
+
+See [examples/README.md](examples/README.md) and [docs/patterns](docs/patterns).
+
+
 
 ## Architecture
 

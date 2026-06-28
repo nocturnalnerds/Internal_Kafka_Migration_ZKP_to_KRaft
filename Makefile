@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help test lint validate compose-config compose-up compose-down create-topics observability-up observability-migration-up observability-down precheck migrate verify finalize rollback kustomize-local kustomize-final kustomize-production kustomize-secure
+.PHONY: help test lint validate go-test java-test compose-config compose-up compose-down create-topics observability-up observability-migration-up observability-down precheck migrate verify finalize rollback kustomize-local kustomize-final kustomize-production kustomize-secure
 
 help:
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_-]+:.*##/ {printf "%-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -12,6 +12,12 @@ lint: ## Run lightweight local lint checks.
 	python3 -m unittest tests.test_static_contract -v
 
 validate: test ## Alias for all local validation.
+
+go-test: ## Run Go unit tests for dependency-free internals.
+	cd examples/go && GOCACHE=$${TMPDIR:-/tmp}/kafka-zk-kraft-go-cache go test ./internal/...
+
+java-test: ## Run Java unit tests.
+	cd examples/java && mvn test
 
 compose-config: ## Validate Docker Compose syntax when Docker is available.
 	docker compose -f docker-compose.yml config --quiet
