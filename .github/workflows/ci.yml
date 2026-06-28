@@ -1,0 +1,81 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  repository-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache-dependency-path: examples/go/go.sum
+      - name: Run repository tests
+        run: make test
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose files
+        run: |
+          docker compose -f docker-compose.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.migration.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.kraft.yml config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.secure.yml config --quiet
+
+  kubernetes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-kubectl@v4
+      - name: Render Kustomize overlays
+        run: |
+          kubectl kustomize k8s/overlays/local >/tmp/local.yaml
+          kubectl kustomize k8s/overlays/final-kraft >/tmp/final-kraft.yaml
+          kubectl kustomize k8s/overlays/production >/tmp/production.yaml
+          kubectl kustomize k8s/overlays/secure >/tmp/secure.yaml
+
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache-dependency-path: examples/go/go.sum
+      - name: Test Go examples
+        working-directory: examples/go
+        run: go test ./...
+
+  java:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+      - name: Test Java examples
+        working-directory: examples/java
+        run: mvn -B test
+
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate shell scripts
+        run: |
+          bash -n scripts/*.sh
+          bash -n scripts/lib/*.sh
+          bash -n scripts/security/*.sh
+          bash -n chaos/scenarios/*.sh

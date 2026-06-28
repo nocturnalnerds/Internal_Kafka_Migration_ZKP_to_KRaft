@@ -1,0 +1,14 @@
+flowchart LR
+  ca["Local CA"]
+  certs["Broker Keystores / Truststore"]
+  scram["SCRAM Users"]
+  acls["Kafka ACLs"]
+  clients["Producers and Consumers"]
+  brokers["Kafka Brokers"]
+
+  ca --> certs
+  certs --> brokers
+  scram --> brokers
+  acls --> brokers
+  clients -- "SASL_SSL" --> brokers
+

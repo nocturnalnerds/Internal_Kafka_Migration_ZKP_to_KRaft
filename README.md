@@ -79,6 +79,27 @@ processing.
 
 See [examples/README.md](examples/README.md) and [docs/patterns](docs/patterns).
 
+## Chaos And CI
+
+Chaos scenarios live in [chaos](chaos) and should be run only against local or
+staging clusters:
+
+```bash
+DRY_RUN=true chaos/scenarios/kill-broker.sh kafka-2
+```
+
+GitHub Actions validates repository tests, Docker Compose rendering, Kustomize
+rendering, Go examples, Java examples, and shell scripts. See
+[.github/workflows/ci.yml](.github/workflows/ci.yml).
+
+## Operations Documentation
+
+- [Local development](docs/local-development.md)
+- [Production checklist](docs/production-checklist.md)
+- [Operations](docs/operations.md)
+- [Disaster recovery](docs/disaster-recovery.md)
+- [Commit walkthrough](docs/commit-walkthrough.md)
+
 
 
 ## Architecture

@@ -1,0 +1,16 @@
+flowchart LR
+  kafka["Kafka Brokers"]
+  controllers["KRaft Controllers"]
+  zk["ZooKeeper"]
+  jmx["JMX Exporters"]
+  prom["Prometheus"]
+  graf["Grafana"]
+  am["Alertmanager"]
+
+  kafka --> jmx
+  controllers --> jmx
+  zk --> jmx
+  jmx --> prom
+  prom --> graf
+  prom --> am
+

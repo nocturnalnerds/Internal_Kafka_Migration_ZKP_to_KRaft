@@ -29,6 +29,11 @@ class BaselineRepositoryContract(unittest.TestCase):
             "docs/patterns/exactly-once.md",
             "docs/patterns/transactional-outbox.md",
             "docs/patterns/retry-dlq.md",
+            "chaos/README.md",
+            ".github/workflows/ci.yml",
+            "docs/operations.md",
+            "docs/production-checklist.md",
+            "docs/disaster-recovery.md",
         ]
 
         missing = [path for path in required if not (ROOT / path).exists()]

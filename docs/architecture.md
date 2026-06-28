@@ -69,3 +69,9 @@ flowchart TB
   controllers -. "migration" .-> zk
   brokers --> controllers
 ```
+
+Additional diagrams:
+
+- [Migration sequence](diagrams/migration-sequence.mmd)
+- [Observability flow](diagrams/observability-flow.mmd)
+- [Security flow](diagrams/security-flow.mmd)

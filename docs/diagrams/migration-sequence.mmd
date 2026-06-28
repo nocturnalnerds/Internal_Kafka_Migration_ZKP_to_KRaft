@@ -1,0 +1,18 @@
+sequenceDiagram
+  participant Operator
+  participant ZK as ZooKeeper Ensemble
+  participant Broker as Kafka Brokers
+  participant Controller as KRaft Controllers
+  participant Client as Clients
+
+  Operator->>Broker: Run pre-checks
+  Broker->>ZK: Read source metadata
+  Operator->>Controller: Start controllers in migration mode
+  Controller->>ZK: Import metadata
+  Operator->>Broker: Roll brokers with migration flags
+  Client->>Broker: Continue produce/consume
+  Operator->>Broker: Verify topics, ACLs, ISR, client traffic
+  Operator->>Broker: Finalize KRaft broker mode
+  Broker->>Controller: Use KRaft metadata quorum
+  Operator->>ZK: Stop after acceptance window
+

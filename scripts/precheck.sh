@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# shellcheck source=scripts/lib/common.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/common.sh"
 
 usage() {
@@ -59,4 +60,3 @@ run compose exec -T zookeeper-1 zookeeper-shell zookeeper-1:2181 ls /kafka/broke
 snapshot_metadata
 mark_state precheck-passed
 log "precheck completed"
-
