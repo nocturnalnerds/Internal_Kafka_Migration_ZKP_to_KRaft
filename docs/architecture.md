@@ -49,3 +49,23 @@ flowchart LR
 
 Each phase has a script and a documented runbook.
 
+## Kubernetes Topology
+
+The Kubernetes deployment uses StatefulSets and headless services so each
+ZooKeeper node, broker, and controller keeps stable network identity and durable
+storage.
+
+```mermaid
+flowchart TB
+  subgraph ns["Namespace: kafka-migration"]
+    zk["zookeeper StatefulSet x3"]
+    brokers["kafka StatefulSet x3"]
+    controllers["kraft-controller StatefulSet x3"]
+    svc["kafka-bootstrap Service"]
+  end
+
+  svc --> brokers
+  brokers -. "pre-finalization" .-> zk
+  controllers -. "migration" .-> zk
+  brokers --> controllers
+```

@@ -47,6 +47,17 @@ CONFIRM_FINALIZE=yes scripts/finalize.sh
 See [docs/runbooks/migration.md](docs/runbooks/migration.md) for the full
 runbook, rollback guidance, and acceptance checks.
 
+## Kubernetes
+
+```bash
+kubectl kustomize k8s/overlays/local
+kubectl apply -k k8s/overlays/local
+```
+
+The Kubernetes layer uses StatefulSets with persistent volume claim templates
+for ZooKeeper, Kafka brokers, and dedicated KRaft controllers. See
+[k8s/README.md](k8s/README.md).
+
 ## Architecture
 
 The target topology is:

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kraft-controller-headless
+  labels:
+    app.kubernetes.io/name: kraft-controller
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: kraft-controller
+  ports:
+    - name: controller
+      port: 9093
+      targetPort: controller
+    - name: jmx
+      port: 9101
+      targetPort: jmx
+

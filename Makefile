@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help test lint validate compose-config compose-up compose-down create-topics precheck migrate verify finalize rollback
+.PHONY: help test lint validate compose-config compose-up compose-down create-topics precheck migrate verify finalize rollback kustomize-local kustomize-final kustomize-production
 
 help:
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_-]+:.*##/ {printf "%-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -39,3 +39,12 @@ finalize: ## Finalize into KRaft mode; requires CONFIRM_FINALIZE=yes.
 
 rollback: ## Roll back before finalization; requires CONFIRM_ROLLBACK=yes.
 	scripts/rollback.sh
+
+kustomize-local: ## Render local Kubernetes manifests.
+	kubectl kustomize k8s/overlays/local
+
+kustomize-final: ## Render final KRaft Kubernetes manifests.
+	kubectl kustomize k8s/overlays/final-kraft
+
+kustomize-production: ## Render production Kubernetes manifests.
+	kubectl kustomize k8s/overlays/production

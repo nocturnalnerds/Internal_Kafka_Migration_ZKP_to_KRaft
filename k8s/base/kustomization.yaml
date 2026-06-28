@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kafka-migration
+
+resources:
+  - namespace.yaml
+  - zookeeper-service.yaml
+  - zookeeper-statefulset.yaml
+  - kafka-service.yaml
+  - kafka-zk-statefulset.yaml
+  - kraft-controller-service.yaml
+  - kraft-controller-statefulset.yaml
+  - pod-disruption-budgets.yaml
+
+configMapGenerator:
+  - name: kafka-cluster-settings
+    literals:
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_PARTITIONS=6
+      - KAFKA_LOG_RETENTION_HOURS=168
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+      - CONTROLLER_QUORUM_VOTERS=101@kraft-controller-0.kraft-controller-headless.kafka-migration.svc.cluster.local:9093,102@kraft-controller-1.kraft-controller-headless.kafka-migration.svc.cluster.local:9093,103@kraft-controller-2.kraft-controller-headless.kafka-migration.svc.cluster.local:9093
+

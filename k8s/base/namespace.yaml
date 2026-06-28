@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kafka-migration
+  labels:
+    app.kubernetes.io/name: kafka-migration-lab
+
