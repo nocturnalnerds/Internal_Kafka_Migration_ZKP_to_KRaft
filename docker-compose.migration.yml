@@ -1,0 +1,19 @@
+name: kafka-zk-kraft
+
+x-migration-broker-env: &migration-broker-env
+  KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE: "true"
+  KAFKA_CONTROLLER_QUORUM_VOTERS: ${CONTROLLER_QUORUM_VOTERS:-101@kraft-controller-1:9093,102@kraft-controller-2:9093,103@kraft-controller-3:9093}
+
+services:
+  kafka-1:
+    environment:
+      <<: *migration-broker-env
+
+  kafka-2:
+    environment:
+      <<: *migration-broker-env
+
+  kafka-3:
+    environment:
+      <<: *migration-broker-env
+

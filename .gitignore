@@ -10,6 +10,8 @@
 data/
 logs/
 tmp/
+backups/
+.migration-state/
 
 # Secrets generated for local development
 security/certs/generated/
@@ -28,4 +30,3 @@ coverage.out
 __pycache__/
 *.py[cod]
 .pytest_cache/
-

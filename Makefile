@@ -1,6 +1,6 @@
 SHELL := /usr/bin/env bash
 
-.PHONY: help test lint validate compose-config compose-up compose-down create-topics
+.PHONY: help test lint validate compose-config compose-up compose-down create-topics precheck migrate verify finalize rollback
 
 help:
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_-]+:.*##/ {printf "%-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -24,3 +24,18 @@ compose-down: ## Stop the local cluster but keep persistent volumes.
 
 create-topics: ## Create sample topics in the local cluster.
 	docker compose --profile tools run --rm kafka-init
+
+precheck: ## Run migration pre-checks.
+	scripts/precheck.sh
+
+migrate: ## Start KRaft migration phase.
+	scripts/migrate.sh
+
+verify: ## Verify migration health.
+	scripts/verify.sh
+
+finalize: ## Finalize into KRaft mode; requires CONFIRM_FINALIZE=yes.
+	scripts/finalize.sh
+
+rollback: ## Roll back before finalization; requires CONFIRM_ROLLBACK=yes.
+	scripts/rollback.sh

@@ -26,10 +26,26 @@ git log --oneline --decorate
 ```bash
 make test
 make lint
+make compose-config
 ```
 
 More commands are added alongside the Compose, Kubernetes, and application
 layers.
+
+## Local Migration Flow
+
+```bash
+cp .env.example .env
+make compose-up
+make create-topics
+scripts/precheck.sh
+scripts/migrate.sh
+scripts/verify.sh
+CONFIRM_FINALIZE=yes scripts/finalize.sh
+```
+
+See [docs/runbooks/migration.md](docs/runbooks/migration.md) for the full
+runbook, rollback guidance, and acceptance checks.
 
 ## Architecture
 
@@ -53,4 +69,3 @@ See [docs/architecture.md](docs/architecture.md) for the evolving design.
 - Go 1.22+ for sample clients
 
 Only Python and Bash are required for the baseline repository tests.
-

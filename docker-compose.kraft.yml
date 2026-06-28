@@ -1,0 +1,26 @@
+name: kafka-zk-kraft
+
+x-kraft-broker-env: &kraft-broker-env
+  KAFKA_PROCESS_ROLES: broker
+  KAFKA_CONTROLLER_QUORUM_VOTERS: ${CONTROLLER_QUORUM_VOTERS:-101@kraft-controller-1:9093,102@kraft-controller-2:9093,103@kraft-controller-3:9093}
+  KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+  KAFKA_ZOOKEEPER_CONNECT: ""
+  KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE: "false"
+
+services:
+  kafka-1:
+    environment:
+      <<: *kraft-broker-env
+      KAFKA_NODE_ID: 1
+
+  kafka-2:
+    environment:
+      <<: *kraft-broker-env
+      KAFKA_NODE_ID: 2
+
+  kafka-3:
+    environment:
+      <<: *kraft-broker-env
+      KAFKA_NODE_ID: 3
+

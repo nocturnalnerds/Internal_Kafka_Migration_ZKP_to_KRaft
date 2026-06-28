@@ -18,6 +18,8 @@ class BaselineRepositoryContract(unittest.TestCase):
             "docker/README.md",
             "docker/scripts/create-topics.sh",
             "docker/kafka/client.properties",
+            "scripts/README.md",
+            "docs/runbooks/migration.md",
         ]
 
         missing = [path for path in required if not (ROOT / path).exists()]
