@@ -13,6 +13,11 @@ class BaselineRepositoryContract(unittest.TestCase):
             "Makefile",
             ".gitignore",
             ".editorconfig",
+            "docker-compose.yml",
+            ".env.example",
+            "docker/README.md",
+            "docker/scripts/create-topics.sh",
+            "docker/kafka/client.properties",
         ]
 
         missing = [path for path in required if not (ROOT / path).exists()]
@@ -33,6 +38,38 @@ class BaselineRepositoryContract(unittest.TestCase):
                 self.assertIn(phrase, readme)
 
 
+class ComposeContract(unittest.TestCase):
+    def setUp(self):
+        self.compose = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
+
+    def test_required_services_are_declared(self):
+        for service in [
+            "zookeeper-1",
+            "zookeeper-2",
+            "zookeeper-3",
+            "kafka-1",
+            "kafka-2",
+            "kafka-3",
+            "kraft-controller-1",
+            "kraft-controller-2",
+            "kraft-controller-3",
+            "kafka-init",
+        ]:
+            with self.subTest(service=service):
+                self.assertIn(f"  {service}:", self.compose)
+
+    def test_compose_includes_operational_contracts(self):
+        for phrase in [
+            "healthcheck:",
+            "volumes:",
+            "KAFKA_ZOOKEEPER_CONNECT",
+            "KAFKA_ZOOKEEPER_METADATA_MIGRATION_ENABLE",
+            "KAFKA_CONTROLLER_QUORUM_VOTERS",
+            'profiles: ["migration"]',
+        ]:
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, self.compose)
+
+
 if __name__ == "__main__":
     unittest.main()
-
