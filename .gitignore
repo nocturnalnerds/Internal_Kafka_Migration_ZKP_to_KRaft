@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Runtime data
+data/
+logs/
+tmp/
+
+# Secrets generated for local development
+security/certs/generated/
+*.jks
+*.p12
+*.pem
+*.key
+*.crt
+*.srl
+
+# Go
+bin/
+coverage.out
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
