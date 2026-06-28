@@ -5,13 +5,13 @@ SHELL := /usr/bin/env bash
 help:
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_-]+:.*##/ {printf "%-24s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-test: ## Run repository tests.
+test: ## Run Custom Repo tests.
 	python3 -m unittest discover -s tests -v
 
-lint: ## Run lightweight local lint checks.
+lint: ## Run local lint checks.
 	python3 -m unittest tests.test_static_contract -v
 
-validate: test ## Alias for all local validation.
+validate: test ## Alias for all validation.
 
 go-test: ## Run Go unit tests for dependency-free internals.
 	cd examples/go && GOCACHE=$${TMPDIR:-/tmp}/kafka-zk-kraft-go-cache go test ./internal/...

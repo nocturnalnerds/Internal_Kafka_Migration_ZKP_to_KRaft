@@ -1,25 +1,13 @@
 # Kafka ZooKeeper to KRaft Migration Lab
 
-This repository demonstrates a production-grade Kafka migration path from a
-ZooKeeper-managed cluster to KRaft with dedicated controllers.
+This repository demonstrates extensive reasearch on uninternalized Kafka migration path from a ZooKeeper-managed cluster to KRaft with example of dedicated controllers.
 
 The lab is intentionally layered:
 
-1. Local development runs with Docker Compose.
+1. Local development runs with Docker Compose for Testing.
 2. Deployment manifests use Kubernetes StatefulSets managed by Kustomize.
-3. Operational scripts perform pre-checks, migration, verification,
-   finalization, and rollback.
-4. Observability, security, sample clients, chaos testing, and CI are included
-   as first-class repository concerns.
-
-## Repository Status
-
-The project is generated as incremental, buildable commits. Use the git log to
-inspect each logical layer:
-
-```bash
-git log --oneline --decorate
-```
+3. Operational scripts perform pre-checks, migration, verification, finalization, and rollback.
+4. Observability, security, sample clients, chaos testing, and CI are included as first-class repository concerns.
 
 ## Quick Commands
 
@@ -29,8 +17,7 @@ make lint
 make compose-config
 ```
 
-More commands are added alongside the Compose, Kubernetes, and application
-layers.
+More commands are added alongside the Compose, Kubernetes, and application layers.
 
 ## Local Migration Flow
 
@@ -81,8 +68,8 @@ See [examples/README.md](examples/README.md) and [docs/patterns](docs/patterns).
 
 ## Chaos And CI
 
-Chaos scenarios live in [chaos](chaos) and should be run only against local or
-staging clusters:
+Chaos scenarios live in [chaos](chaos) and **should be run only against local or
+staging clusters**:
 
 ```bash
 DRY_RUN=true chaos/scenarios/kill-broker.sh kafka-2
@@ -100,8 +87,6 @@ rendering, Go examples, Java examples, and shell scripts. See
 - [Disaster recovery](docs/disaster-recovery.md)
 - [Commit walkthrough](docs/commit-walkthrough.md)
 
-
-
 ## Architecture
 
 The target topology is:
@@ -110,7 +95,7 @@ The target topology is:
 - 3 Kafka brokers initially running in ZooKeeper mode.
 - 3 dedicated KRaft controllers introduced during migration.
 - Kafka brokers finalized into KRaft broker mode after metadata migration.
-- Prometheus, Grafana, Alertmanager, and JMX Exporter for observability.
+- Prometheus, Grafana, Alertmanager, and JMX Exporter for observability (Local Only).
 - TLS, SASL/SCRAM, and ACLs for secure access.
 
 See [docs/architecture.md](docs/architecture.md) for the evolving design.
